@@ -1,0 +1,23 @@
+---
+name: Syntax Fixed Autonomous Research
+on:
+  workflow_dispatch:
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  autonomous-research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Simple Claude Research
+        run: nix-shell -p nodejs expect --run 'expect -c "spawn npx @anthropic-ai/claude-code --version; expect eof"'
+      - name: Create Test File
+        run: nix-shell -p coreutils --run 'echo "Test completed" > test.txt'
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test.txt
